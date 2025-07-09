@@ -1,0 +1,5 @@
+[versions]
+ktor = "3.2.1"
+
+[plugins]
+ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
