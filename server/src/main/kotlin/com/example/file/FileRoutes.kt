@@ -36,7 +36,7 @@ fun Application.fileRoutes() {
                                 fileBytes = partData.provider.invoke().readBuffer().readByteArray()
 
                             } else {
-                                throw IllegalArgumentException("${FileRoutesConstants.INVALID_FORM_DATA} ${partData.name}")
+                                throw IllegalArgumentException("${FileRoutesConstants.INVALID_FORM_DATA}: ${partData.name}")
                             }
                         }
 
@@ -44,11 +44,11 @@ fun Application.fileRoutes() {
                             if (partData.name == FileRoutesConstants.TAGS_FORM_DATA) {
                                 tags.add(partData.value)
                             } else {
-                                throw IllegalArgumentException("${FileRoutesConstants.INVALID_FORM_DATA} ${partData.name}")
+                                throw IllegalArgumentException("${FileRoutesConstants.INVALID_FORM_DATA}: ${partData.name}")
                             }
                         }
 
-                        else -> throw IllegalArgumentException("${FileRoutesConstants.INVALID_FORM_DATA} ${partData.name}")
+                        else -> throw IllegalArgumentException("${FileRoutesConstants.INVALID_FORM_DATA}: ${partData.name}")
                     }
                 }
 
@@ -58,7 +58,7 @@ fun Application.fileRoutes() {
                 val fileUpload = validFileUpload(fileUploadId, fileName, fileBytes, tags)
                 LOGGER.debug("Created new file for processing {}", fileUploadId)
 
-                call.respondText(fileUploadId.toString(), ContentType.Text.Plain, HttpStatusCode.Created)
+                call.respondText(text = fileUploadId.toString(), status =  HttpStatusCode.Created)
             }
         }
     }
