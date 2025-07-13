@@ -1,4 +1,4 @@
-include("server", "kooq")
+include("server", "kooq", "data")
 
 rootProject.name = "docuIQK"
 
