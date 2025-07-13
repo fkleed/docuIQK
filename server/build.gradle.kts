@@ -12,6 +12,8 @@ dependencies {
     implementation("io.ktor:ktor-server-status-pages")
 
     implementation(libs.logback)
+
+    implementation(libs.data)
 }
 
 application {

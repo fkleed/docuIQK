@@ -1,9 +1,26 @@
 [versions]
 ktor = "3.2.1"
 logback = "1.5.18"
+docker-run = "0.36.0"
+liquibase-plugin = "3.0.2"
+liquibase-core = "4.33.0"
+picocli = "4.7.7"
+postgresql = "42.7.7"
+jooq = "10.1.1"
+data = "1.0"
 
 [libraries]
 logback = { group = "ch.qos.logback", name = "logback-classic", version.ref = "logback" }
+liquibase-core = { group = "org.liquibase", name = "liquibase-core", version.ref = "liquibase-core" }
+picocli = { group = "info.picocli", name = "picocli", version.ref = "picocli" }
+postgresql = { group = "org.postgresql", name = "postgresql", version.ref = "postgresql" }
+data = { group = "com.example", name = "data", version.ref = "data" }
+
+[bundles]
+liquibase = ["liquibase-core", "picocli", "postgresql"]
 
 [plugins]
 ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
+docker-run = { id = "com.palantir.docker-run", version.ref = "docker-run" }
+liquibase-plugin = { id = "org.liquibase.gradle", version.ref = "liquibase-plugin" }
+jooq = { id = "nu.studer.jooq", version.ref = "jooq" }

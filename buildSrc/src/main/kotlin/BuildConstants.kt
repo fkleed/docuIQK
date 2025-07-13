@@ -1,5 +1,4 @@
 class BuildConstants {
-
     companion object {
         const val KOTLIN_CONVENTIONS_PLUGIN = "kotlin-conventions"
         const val GROUP = "com.example"

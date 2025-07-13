@@ -1,0 +1,35 @@
+name: docuiqk
+
+services:
+  docuiqk_adminer:
+    image: adminer:5.3.0
+    restart: unless-stopped
+    ports:
+      - 8090:8080
+    environment:
+      - ADMINER_DESIGN=nette
+    networks:
+      - docuiqk-db-network
+  docuiqk_db:
+    image: postgres:17.4-alpine3.21
+    restart: on-failure
+    shm_size: 128mb
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - DB_USER_NAME=${DB_USER_NAME}
+      - DB_USER_PASSWORD=${DB_USER_PASSWORD}
+    volumes:
+      - docuiqk_db_data:/var/lib/postgresql/data
+      - ./init-user-db.sh:/docker-entrypoint-initdb.d/init-user-db.sh
+    ports:
+      - '5434:5432'
+    networks:
+      - docuiqk-db-network
+volumes:
+  docuiqk_db_data:
+
+networks:
+  docuiqk-db-network:
+    name: docuiqk-db-network
+    driver: bridge

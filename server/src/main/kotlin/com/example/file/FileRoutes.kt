@@ -21,7 +21,7 @@ fun Application.fileRoutes() {
 
                 var fileName: String? = null;
                 var fileBytes: ByteArray? = null;
-                var tags: MutableSet<String> = mutableSetOf<String>();
+                val tags: MutableSet<String> = mutableSetOf<String>();
 
                 multipart.forEachPart { partData ->
                     when (partData) {
