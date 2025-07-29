@@ -23,7 +23,7 @@ services:
       - docuiqk_db_data:/var/lib/postgresql/data
       - ./init-user-db.sh:/docker-entrypoint-initdb.d/init-user-db.sh
     ports:
-      - '65421:5432'
+      - '5434:5432'
     networks:
       - docuiqk-db-network
 volumes:
