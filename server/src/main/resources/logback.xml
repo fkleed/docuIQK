@@ -1,11 +1,19 @@
-<configuration>
+<configuration scan="true" scanPeriod="15 seconds">
+    <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener" />
+    <property name="APP_LOGGING_LEVEL" value="${appLoggingLevel:-INFO}" />
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>%d{YYYY-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
-    <root level="trace">
+    <root level="DEBUG">
         <appender-ref ref="STDOUT"/>
     </root>
+    <logger name="com.example" level="${APP_LOGGING_LEVEL}" additivity="false">
+        <appender-ref ref="STDOUT"/>
+    </logger>
+    <logger name="org.jooq" level="TRACE" additivity="false">
+        <appender-ref ref="STDOUT"/>
+    </logger>
     <logger name="io.netty" level="INFO"/>
 </configuration>
