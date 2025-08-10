@@ -11,12 +11,14 @@ plugins {
     id(BuildConstants.KOTLIN_CONVENTIONS_PLUGIN)
     alias(libs.plugins.docker.run)
     alias(libs.plugins.liquibase.plugin)
-    alias(libs.plugins.jooq)
+    alias(libs.plugins.jooq.code.generator)
 }
 
 dependencies {
     liquibaseRuntime(libs.bundles.liquibase)
     jooqGenerator(libs.postgresql)
+    api(libs.jooq)
+    api(libs.postgresql)
 }
 
 val dbPortLocal: Int = (requireNotNull(project.findProperty("db.port.local")) as String).toInt()
@@ -115,6 +117,7 @@ jooq {
                     }
                     generate {
                         isPojosAsKotlinDataClasses = true
+                        isKotlinNotNullRecordAttributes = true
                     }
                     target {
                         packageName = "${BuildConstants.BASE_PACKAGE_NAME}.data.codegen.jooq"
@@ -146,6 +149,7 @@ dockerRunStatus.dependsOn(dockerRunTask)
 
 tasks.withType<org.liquibase.gradle.LiquibaseTask>().configureEach {
     dependsOn(processResources)
+    jvmArgs("-Duser.timezone=UTC")
 }
 liquibaseUpdateLocal.dependsOn( dockerRunStatus)
 if (dbUpdateProd) {

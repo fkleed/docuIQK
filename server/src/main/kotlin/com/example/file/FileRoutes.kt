@@ -11,7 +11,7 @@ import io.ktor.utils.io.*
 import kotlinx.io.readByteArray
 import java.util.*
 
-internal val LOGGER = KtorSimpleLogger("com.example.FileRoutes")
+private val LOGGER = KtorSimpleLogger("com.example.FileRoutes")
 
 fun Application.fileRoutes() {
     routing {
