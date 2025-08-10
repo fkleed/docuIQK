@@ -11,4 +11,13 @@ class CollectionServiceImpl(val collectionRepository: CollectionRepository) : Co
     override fun getById(id: UUID): DocumentCollection {
         return collectionRepository.getById(id)
     }
+
+    override fun update(documentCollection: DocumentCollection) {
+        require(documentCollection.id != null) { "Document collection must have an id for update" }
+        return collectionRepository.update(documentCollection)
+    }
+
+    override fun deleteById(id: UUID) {
+        collectionRepository.deleteById(id)
+    }
 }
