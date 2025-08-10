@@ -1,16 +1,16 @@
 package com.example.collection
 
-import io.ktor.http.HttpStatusCode
-import io.ktor.server.application.Application
-import io.ktor.server.plugins.di.dependencies
-import io.ktor.server.request.receive
-import io.ktor.server.response.respond
-import io.ktor.server.routing.get
-import io.ktor.server.routing.post
-import io.ktor.server.routing.route
-import io.ktor.server.routing.routing
+import io.ktor.http.*
+import io.ktor.server.application.*
+import io.ktor.server.plugins.di.*
+import io.ktor.server.request.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
 import org.jooq.DSLContext
-import java.util.UUID
+import org.slf4j.LoggerFactory
+import java.util.*
+
+private val LOGGER = LoggerFactory.getLogger("com.example.collection.CollectionModuleKt")
 
 fun Application.collectionModule() {
 
@@ -28,12 +28,14 @@ fun Application.collectionModule() {
 
             post {
                 val documentCollection = call.receive<DocumentCollection>()
+                LOGGER.debug("Request to store collection")
                 val id = collectionService.save(documentCollection)
                 call.respond(HttpStatusCode.Created, id.toString())
             }
 
             get("/{id}") {
                 val collectionId = UUID.fromString(call.parameters["id"])
+                LOGGER.debug("Request to get collection with id {}", collectionId)
                 val collection =  collectionService.getById(collectionId)
                 call.respond(collection)
             }
