@@ -25,6 +25,21 @@ class JooqCollectionRepositoryImpl(
         return documentCollection ?: throw NotFoundException("Collection with id $id does not exist")
     }
 
+    override fun update(documentCollection: DocumentCollection) {
+        check(documentCollection.id != null)
+        db.update(COLLECTION)
+            .set(COLLECTION.NAME, documentCollection.name)
+            .set(COLLECTION.DESCRIPTION, documentCollection.description)
+            .where(COLLECTION.ID.eq(documentCollection.id))
+            .execute()
+    }
+
+    override fun deleteById(id: UUID) {
+        db.delete(COLLECTION)
+            .where(COLLECTION.ID.eq(id))
+            .execute()
+    }
+
     private fun DocumentCollection.toRecord(collectionId: UUID) = CollectionRecord(
         collectionId,
         name,

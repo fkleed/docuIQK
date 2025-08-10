@@ -28,7 +28,7 @@ fun Application.collectionModule() {
 
             post {
                 val documentCollection = call.receive<DocumentCollection>()
-                LOGGER.debug("Request to store collection")
+                LOGGER.debug("Request to store collection {}", documentCollection)
                 val id = collectionService.save(documentCollection)
                 call.respond(HttpStatusCode.Created, id.toString())
             }
@@ -38,6 +38,18 @@ fun Application.collectionModule() {
                 LOGGER.debug("Request to get collection with id {}", collectionId)
                 val collection =  collectionService.getById(collectionId)
                 call.respond(collection)
+            }
+            put {
+                val documentCollection = call.receive<DocumentCollection>()
+                LOGGER.debug("Request to update collection {}", documentCollection)
+                collectionService.update(documentCollection)
+                call.respond(HttpStatusCode.NoContent)
+            }
+            delete("/{id}") {
+                val collectionId = UUID.fromString(call.parameters["id"])
+                LOGGER.debug("Request to delete collection with id {}", collectionId)
+                collectionService.deleteById(collectionId)
+                call.respond(HttpStatusCode.NoContent)
             }
         }
     }
