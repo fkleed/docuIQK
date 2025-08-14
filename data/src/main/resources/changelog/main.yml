@@ -3,3 +3,7 @@ databaseChangeLog:
       file: collection.yml
       errorIfMissing: true
       relativeToChangelogFile: true
+  - include:
+      file: tag.yml
+      errorIfMissing: true
+      relativeToChangelogFile: true

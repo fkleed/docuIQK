@@ -159,10 +159,6 @@ if (dbUpdateProd) {
 val generateJooq = tasks.getByName("generateJooq")
 generateJooq.dependsOn(liquibaseUpdateLocal)
 
-tasks.register("testPrint") {
-    println(layout.projectDirectory.dir("src/main/resources/changelog").asFile.path)
-}
-
 publishing {
     publications {
         create<MavenPublication>("data") {
