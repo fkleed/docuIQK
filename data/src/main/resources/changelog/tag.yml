@@ -1,0 +1,22 @@
+databaseChangeLog:
+  - changeSet:
+      id: 202508142000
+      author: fkleed
+      labels: tag
+      context: main
+      changes:
+        - createTable:
+            tableName: tag
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    unique: true

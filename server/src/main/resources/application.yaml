@@ -13,4 +13,4 @@ database:
   password: password123
 logging:
   jooq:
-    enabled: false
+    enabled: true

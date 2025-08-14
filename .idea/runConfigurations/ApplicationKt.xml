@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="ApplicationKt" type="JetRunConfigurationType" nameIsGenerated="true">
+    <option name="MAIN_CLASS_NAME" value="com.example.ApplicationKt" />
+    <module name="docuIQK.server.main" />
+    <shortenClasspath name="NONE" />
+    <option name="VM_PARAMETERS" value="-DappLoggingLevel=DEBUG" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

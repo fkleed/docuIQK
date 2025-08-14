@@ -12,7 +12,6 @@ class JooqCollectionRepositoryImpl(
 
     override fun save(documentCollection: DocumentCollection): UUID {
         val collectionId = documentCollection.id ?: UUID.randomUUID()
-
         db.insertInto(COLLECTION)
             .set(documentCollection.toRecord(collectionId))
             .execute()
@@ -21,23 +20,28 @@ class JooqCollectionRepositoryImpl(
     }
 
     override fun getById(id: UUID): DocumentCollection {
-        val documentCollection = db.fetchOne(COLLECTION, COLLECTION.ID.eq(id))?.toDocumentCollection()
-        return documentCollection ?: throw NotFoundException("Collection with id $id does not exist")
+        val collectionRecord = recordByIdOrElseThrowNotFound(id)
+        return collectionRecord.toDocumentCollection()
     }
 
     override fun update(documentCollection: DocumentCollection) {
-        check(documentCollection.id != null)
-        db.update(COLLECTION)
-            .set(COLLECTION.NAME, documentCollection.name)
-            .set(COLLECTION.DESCRIPTION, documentCollection.description)
-            .where(COLLECTION.ID.eq(documentCollection.id))
-            .execute()
+        val collectionRecord = recordByIdOrElseThrowNotFound(documentCollection.id)
+        collectionRecord.name = documentCollection.name
+        collectionRecord.description = documentCollection.description
+        collectionRecord.update()
     }
 
     override fun deleteById(id: UUID) {
-        db.delete(COLLECTION)
-            .where(COLLECTION.ID.eq(id))
-            .execute()
+        val collectionRecord = recordByIdOrElseThrowNotFound(id)
+        collectionRecord.delete()
+    }
+
+    private fun recordByIdOrElseThrowNotFound(collectionId: UUID?): CollectionRecord {
+        check(collectionId != null)
+
+        val collectionRecord = db.fetchOne(COLLECTION, COLLECTION.ID.eq(collectionId))
+            ?: (throw NotFoundException ("Collection with id $collectionId does not exist"))
+        return collectionRecord
     }
 
     private fun DocumentCollection.toRecord(collectionId: UUID) = CollectionRecord(
