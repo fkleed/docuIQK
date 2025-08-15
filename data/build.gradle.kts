@@ -37,8 +37,6 @@ dockerRun {
     env(mapOf("POSTGRES_PASSWORD" to pgPasswordLocal))
 }
 
-val processResources = tasks.getByName<ProcessResources>("processResources")
-
 liquibase {
     activities.register("local") {
         arguments = mapOf(
@@ -85,16 +83,18 @@ val liquibaseUpdateLocal = tasks.register("updateLocal") {
     finalizedBy(liquibaseUpdate)
 }.get()
 
-val liquibaseUpdateProd = tasks.register("updateProd") {
-    group = "liquibase"
-    description = "Runs Liquibase update with 'prod' runList"
+if (dbUpdateProd) {
+    tasks.register("updateProd") {
+        group = "liquibase"
+        description = "Runs Liquibase update with 'prod' runList"
 
-    doFirst {
-        project.liquibase.runList = "prod"
-    }
+        doFirst {
+            project.liquibase.runList = "prod"
+        }
 
-    finalizedBy(liquibaseUpdate)
-}.get()
+        finalizedBy(liquibaseUpdate)
+    }.get()
+}
 
 jooq {
     configurations {
@@ -147,12 +147,10 @@ dockerRunTask.doLast {
 }
 dockerRunStatus.dependsOn(dockerRunTask)
 
-tasks.withType<org.liquibase.gradle.LiquibaseTask>().configureEach {
-    dependsOn(processResources)
-    jvmArgs("-Duser.timezone=UTC")
-}
-liquibaseUpdateLocal.dependsOn( dockerRunStatus)
+liquibaseUpdateLocal.dependsOn(dockerRunStatus)
+
 if (dbUpdateProd) {
+    val liquibaseUpdateProd = tasks.getByName("updateProd")
     liquibaseUpdateLocal.finalizedBy(liquibaseUpdateProd)
 }
 
