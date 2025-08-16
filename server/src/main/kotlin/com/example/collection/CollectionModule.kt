@@ -33,12 +33,18 @@ fun Application.collectionModule() {
                 call.respond(HttpStatusCode.Created, id.toString())
             }
 
+            get {
+                LOGGER.debug("Request to get all collections")
+                call.respond(HttpStatusCode.NotImplemented)
+            }
+
             get("/{id}") {
                 val collectionId = UUID.fromString(call.parameters["id"])
                 LOGGER.debug("Request to get collection with id {}", collectionId)
                 val collection =  collectionService.getById(collectionId)
                 call.respond(collection)
             }
+
             put {
                 val documentCollection = call.receive<DocumentCollection>()
                 LOGGER.debug("Request to update collection {}", documentCollection)

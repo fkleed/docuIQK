@@ -1,8 +1,8 @@
 package com.example.document
 
 import com.example.shared.UUIDSerializer
-import com.example.shared.UUIDSetSerializer
 import com.example.shared.Validated
+import com.example.tag.Tag
 import io.ktor.http.*
 import kotlinx.serialization.Serializable
 import java.util.*
@@ -10,7 +10,7 @@ import java.util.*
 data class DocumentUpload(
     val name: String,
     val collectionId: UUID,
-    val tags: Set<UUID>,
+    val tags: Set<Tag>,
     val documentData: ByteArray
 ) {
     companion object {
@@ -24,7 +24,7 @@ data class DocumentUpload(
         fun validatedDocumentUpload(
             documentName: String?,
             collectionId: UUID?,
-            tags: Set<UUID>?,
+            tags: Set<Tag>,
             documentData: ByteArray?
         ): Validated<DocumentUpload> {
             val validationErrors = mutableSetOf<String>()
@@ -37,9 +37,10 @@ data class DocumentUpload(
                 validationErrors.add("collection id is null")
             }
 
-            if (tags == null) {
-                validationErrors.add("tags is null")
-            }
+            validationErrors.addAll(
+                tags.filter { it.id == null }
+                    .map { "tag ${it.name} has no id" }
+            )
 
             if (documentData == null) {
                 validationErrors.add("document data is null")
@@ -56,7 +57,7 @@ data class DocumentUpload(
                 val documentUpload = DocumentUpload(
                     documentName!!,
                     collectionId!!,
-                    tags!!,
+                    tags,
                     documentData!!
                 )
                 return Validated.Valid(documentUpload)
@@ -64,6 +65,28 @@ data class DocumentUpload(
                 return Validated.Invalid(validationErrors)
             }
         }
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as DocumentUpload
+
+        if (name != other.name) return false
+        if (collectionId != other.collectionId) return false
+        if (tags != other.tags) return false
+        if (!documentData.contentEquals(other.documentData)) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = name.hashCode()
+        result = 31 * result + collectionId.hashCode()
+        result = 31 * result + tags.hashCode()
+        result = 31 * result + documentData.contentHashCode()
+        return result
     }
 }
 
@@ -73,7 +96,7 @@ data class Document(
     val name: String,
     val status: DocumentProcessingStatus,
     @Serializable(with = UUIDSerializer::class) val collectionId: UUID,
-    @Serializable(with = UUIDSetSerializer::class) val tags: Set<UUID>
+    val tags: Set<Tag>
 )
 
 

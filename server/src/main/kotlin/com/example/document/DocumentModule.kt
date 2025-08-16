@@ -1,5 +1,6 @@
 package com.example.document
 
+import com.example.tag.Tag
 import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.server.application.*
@@ -33,7 +34,7 @@ fun Application.documentModule() {
             post("/upload") {
                 var documentName: String? = null
                 var collectionId: UUID? = null
-                var tags: MutableSet<UUID> = mutableSetOf()
+                var tags: MutableSet<Tag> = mutableSetOf()
                 var documentData: ByteArray? = null
 
                 val multipartData = call.receiveMultipart(formFieldLimit = 1024 * 1024 * 100)
@@ -59,11 +60,7 @@ fun Application.documentModule() {
                                 }
 
                                 DocumentUpload.TAGS_FORM_DATA -> {
-                                    val json = Json { ignoreUnknownKeys = true }
-                                    val tagStrings: List<String> = json.decodeFromString(part.value)
-                                    tagStrings.map(UUID::fromString).let {
-                                        tags.addAll(it)
-                                    }
+                                    tags.addAll(Json.decodeFromString<Set<Tag>>(part.value))
                                 }
 
                                 else -> throw IllegalArgumentException(DocumentRouteConstants.INVALID_FORM_DATA)
@@ -94,7 +91,7 @@ fun Application.documentModule() {
                     DocumentProcessingStatus.RECEIVED
                 )
 
-                documentService.save(document)
+                documentService.upload(document)
 
                 call.respondText(
                     text = document.id.toString(),
@@ -107,6 +104,24 @@ fun Application.documentModule() {
                 LOGGER.debug("Request to get document with id {}", documentId)
                 val document = documentService.getById(documentId)
                 call.respond(document)
+            }
+
+            get("/collection/{id}") {
+                val collectionId = UUID.fromString(call.parameters["id"])
+                LOGGER.debug("Request to get all documents for collection with id {}", collectionId)
+                call.respond(HttpStatusCode.NotImplemented)
+            }
+
+            put {
+                val document = call.receive<Document>()
+                LOGGER.debug("Request to update document {}", document)
+                call.respond(HttpStatusCode.NotImplemented)
+            }
+
+            delete("/{id}") {
+                val documentId = UUID.fromString(call.parameters["id"])
+                LOGGER.debug("Request to delete document with id {}", documentId)
+                call.respond(HttpStatusCode.NotImplemented)
             }
         }
     }

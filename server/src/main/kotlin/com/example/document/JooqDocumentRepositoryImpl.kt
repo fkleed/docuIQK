@@ -4,6 +4,9 @@ import com.example.docuiqk.data.codegen.jooq.tables.records.DocumentRecord
 import com.example.docuiqk.data.codegen.jooq.tables.records.DocumentTagRecord
 import com.example.docuiqk.data.codegen.jooq.tables.references.DOCUMENT
 import com.example.docuiqk.data.codegen.jooq.tables.references.DOCUMENT_TAG
+import com.example.docuiqk.data.codegen.jooq.tables.references.TAG
+import com.example.tag.JooqTagRepositoryImpl.Companion.toTag
+import com.example.tag.Tag
 import io.ktor.server.plugins.*
 import org.jooq.DSLContext
 import java.util.*
@@ -28,10 +31,14 @@ class JooqDocumentRepositoryImpl(
 
     override fun findById(id: UUID): Document {
         val documentRecord = recordByIdOrElseThrowNotFound(id)
-        val tags = db.fetch(DOCUMENT_TAG, DOCUMENT_TAG.document.ID.eq(id))
-            .getValues(DOCUMENT_TAG.TAG_ID)
-            .filterNotNull()
-            .toSet()
+        val tagRecords = db.select()
+            .from(TAG)
+            .join(DOCUMENT_TAG)
+            .on(TAG.ID.eq(DOCUMENT_TAG.tag.ID))
+            .where(DOCUMENT_TAG.document.ID.eq(id))
+            .fetch()
+
+        val tags = tagRecords.map{ record -> record.into(TAG) }.map { tagRecord -> tagRecord.toTag() }.toSet()
 
         return documentRecord.toDocument(tags)
     }
@@ -44,21 +51,23 @@ class JooqDocumentRepositoryImpl(
         return documentRecord
     }
 
-    private fun Document.toRecord() = DocumentRecord(
-        id,
-        name,
-        status.toString(),
-        collectionId
-    )
+    companion object {
+        private fun Document.toRecord() = DocumentRecord(
+            id,
+            name,
+            status.toString(),
+            collectionId
+        )
 
-    private fun Document.tagRecords(): List<DocumentTagRecord> =
-        tags.map { DocumentTagRecord(id, it) }
+        private fun Document.tagRecords(): List<DocumentTagRecord> =
+            tags.filterNot{ it.id == null }.map { DocumentTagRecord(id, it.id!!) }
 
-    private fun DocumentRecord.toDocument(tags: Set<UUID>) = Document(
-        id,
-        name,
-        DocumentProcessingStatus.byName(status),
-        collection,
-        tags
-    )
+        private fun DocumentRecord.toDocument(tags: Set<Tag>) = Document(
+            id,
+            name,
+            DocumentProcessingStatus.byName(status),
+            collection,
+            tags
+        )
+    }
 }

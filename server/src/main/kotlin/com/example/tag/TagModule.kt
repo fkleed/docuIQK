@@ -33,18 +33,25 @@ fun Application.tagModule() {
                 call.respond(HttpStatusCode.Created, id.toString())
             }
 
+            get {
+                LOGGER.debug("Request to get all tags")
+                call.respond(HttpStatusCode.NotImplemented)
+            }
+
             get("/{id}") {
                 val tagId = UUID.fromString(call.parameters["id"])
                 LOGGER.debug("Request to get tag with id {}", tagId)
                 val tag =  tagService.getById(tagId)
                 call.respond(tag)
             }
+
             put {
                 val tag = call.receive<Tag>()
                 LOGGER.debug("Request to update tag {}", tag)
                 tagService.update(tag)
                 call.respond(HttpStatusCode.NoContent)
             }
+
             delete("/{id}") {
                 val tagId = UUID.fromString(call.parameters["id"])
                 LOGGER.debug("Request to delete tag with id {}", tagId)

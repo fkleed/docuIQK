@@ -4,7 +4,7 @@ import java.util.UUID
 
 class DocumentServiceImpl(val documentRepository: DocumentRepository) : DocumentService {
 
-    override fun save(document: Document): UUID {
+    override fun upload(document: Document): UUID {
         return documentRepository.save(document)
     }
 

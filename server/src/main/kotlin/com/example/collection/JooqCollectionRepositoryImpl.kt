@@ -2,9 +2,9 @@ package com.example.collection
 
 import com.example.docuiqk.data.codegen.jooq.tables.records.CollectionRecord
 import com.example.docuiqk.data.codegen.jooq.tables.references.COLLECTION
-import io.ktor.server.plugins.NotFoundException
+import io.ktor.server.plugins.*
 import org.jooq.DSLContext
-import java.util.UUID
+import java.util.*
 
 class JooqCollectionRepositoryImpl(
     private val db: DSLContext
@@ -44,15 +44,17 @@ class JooqCollectionRepositoryImpl(
         return collectionRecord
     }
 
-    private fun DocumentCollection.toRecord(collectionId: UUID) = CollectionRecord(
-        collectionId,
-        name,
-        description
-    )
+    companion object {
+        fun DocumentCollection.toRecord(collectionId: UUID) = CollectionRecord(
+            collectionId,
+            name,
+            description
+        )
 
-    private fun CollectionRecord.toDocumentCollection() = DocumentCollection(
-        id,
-        name,
-        description
-    )
+        fun CollectionRecord.toDocumentCollection() = DocumentCollection(
+            id,
+            name,
+            description
+        )
+    }
 }
