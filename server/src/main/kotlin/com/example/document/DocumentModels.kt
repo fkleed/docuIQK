@@ -1,17 +1,17 @@
 package com.example.document
 
+import com.example.shared.UUIDSerializer
+import com.example.shared.UUIDSetSerializer
 import com.example.shared.Validated
-import io.ktor.http.ContentType
-import java.io.File
+import io.ktor.http.*
+import kotlinx.serialization.Serializable
 import java.util.*
 
 data class DocumentUpload(
-    val id: UUID,
     val name: String,
-    val status: DocumentProcessingStatus,
     val collectionId: UUID,
     val tags: Set<UUID>,
-    val documentData: File
+    val documentData: ByteArray
 ) {
     companion object {
         const val DOCUMENT_FROM_DATA = "document"
@@ -25,7 +25,7 @@ data class DocumentUpload(
             documentName: String?,
             collectionId: UUID?,
             tags: Set<UUID>?,
-            documentData: File?
+            documentData: ByteArray?
         ): Validated<DocumentUpload> {
             val validationErrors = mutableSetOf<String>()
 
@@ -43,13 +43,18 @@ data class DocumentUpload(
 
             if (documentData == null) {
                 validationErrors.add("document data is null")
+            } else {
+                val pdfHeader = "%PDF-".toByteArray()
+                if (documentData.size < pdfHeader.size || !documentData.take(pdfHeader.size).toByteArray()
+                        .contentEquals(pdfHeader)
+                ) {
+                    validationErrors.add("document data is not a valid PDF")
+                }
             }
 
             if (validationErrors.isEmpty()) {
                 val documentUpload = DocumentUpload(
-                    UUID.randomUUID(),
                     documentName!!,
-                    DocumentProcessingStatus.RECEIVED,
                     collectionId!!,
                     tags!!,
                     documentData!!
@@ -62,9 +67,28 @@ data class DocumentUpload(
     }
 }
 
+@Serializable
+data class Document(
+    @Serializable(with = UUIDSerializer::class) val id: UUID,
+    val name: String,
+    val status: DocumentProcessingStatus,
+    @Serializable(with = UUIDSerializer::class) val collectionId: UUID,
+    @Serializable(with = UUIDSetSerializer::class) val tags: Set<UUID>
+)
+
+
+fun DocumentUpload.toDocument(documentId: UUID, processingStatus: DocumentProcessingStatus) = Document(
+    documentId,
+    name,
+    processingStatus,
+    collectionId,
+    tags
+)
+
+@Serializable
 enum class DocumentProcessingStatus {
     RECEIVED,
-    STORED,
+    UPLOADED,
     PROCESSING,
     PROCESSED;
 

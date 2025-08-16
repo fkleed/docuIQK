@@ -19,7 +19,7 @@ class JooqCollectionRepositoryImpl(
         return collectionId
     }
 
-    override fun getById(id: UUID): DocumentCollection {
+    override fun findById(id: UUID): DocumentCollection {
         val collectionRecord = recordByIdOrElseThrowNotFound(id)
         return collectionRecord.toDocumentCollection()
     }

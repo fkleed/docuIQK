@@ -6,7 +6,7 @@ interface TagRepository {
 
     fun save(tag: Tag): UUID
 
-    fun getById(id: UUID): Tag
+    fun findById(id: UUID): Tag
 
     fun update(tag: Tag)
 

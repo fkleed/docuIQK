@@ -19,7 +19,7 @@ class JooqTagRepositoryImpl(
         return tagId
     }
 
-    override fun getById(id: UUID): Tag {
+    override fun findById(id: UUID): Tag {
         val tagRecord = recordByIdOrElseThrowNotFound(id)
         return tagRecord.toTag()
     }

@@ -31,7 +31,7 @@ databaseChangeLog:
                     nullable: false
         - addForeignKeyConstraint:
             baseTableName: document
-            baseColumnNames: id
+            baseColumnNames: collection
             referencedTableName: collection
             referencedColumnNames: id
             onDelete: CASCADE
@@ -61,7 +61,7 @@ databaseChangeLog:
             referencedColumnNames: id
             onDelete: CASCADE
             onUpdate: RESTRICT
-            constraintName: fk_document_tag_document
+            constraintName: fk_document
         - addForeignKeyConstraint:
             baseTableName: document_tag
             baseColumnNames: tag_id
@@ -69,5 +69,5 @@ databaseChangeLog:
             referencedColumnNames: id
             onDelete: CASCADE
             onUpdate: RESTRICT
-            constraintName: fk_document_tag_tag
+            constraintName: fk_tag
 

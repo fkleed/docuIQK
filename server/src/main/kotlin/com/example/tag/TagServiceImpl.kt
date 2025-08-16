@@ -8,7 +8,7 @@ class TagServiceImpl(val tagRepository: TagRepository) : TagService {
     }
 
     override fun getById(id: UUID): Tag {
-        return tagRepository.getById(id)
+        return tagRepository.findById(id)
     }
 
     override fun update(tag: Tag) {

@@ -1,6 +1,7 @@
 package com.example.shared
 
 import kotlinx.serialization.KSerializer
+import kotlinx.serialization.builtins.SetSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
@@ -18,3 +19,5 @@ object UUIDSerializer : KSerializer<UUID> {
         encoder.encodeString(value.toString())
     }
 }
+
+object UUIDSetSerializer : KSerializer<Set<UUID>> by SetSerializer(UUIDSerializer)
