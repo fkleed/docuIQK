@@ -4,9 +4,7 @@ ktor:
     rootPath: /docuiqk
   application:
     modules:
-      - com.example.ApplicationKt.module
-    dependencies:
-      - com.example.shared.JooqConfigKt.providePostgresDSLContext
+      - com.example.ApplicationKt.main
 database:
   url: jdbc:postgresql://localhost:5434/docuiqk
   user: docuiqk_user

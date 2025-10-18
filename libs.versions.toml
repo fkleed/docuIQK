@@ -11,6 +11,7 @@ jooq = "3.20.5"
 data = "1.0"
 serialization-plugin = "2.2.0"
 kotlinx-serialization-json = "1.9.0"
+koin-bom = "4.1.1"
 
 [libraries]
 logback = { group = "ch.qos.logback", name = "logback-classic", version.ref = "logback" }
@@ -20,9 +21,14 @@ postgresql = { group = "org.postgresql", name = "postgresql", version.ref = "pos
 data = { group = "com.example", name = "data", version.ref = "data" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
 jooq = { group = "org.jooq", name = "jooq", version.ref = "jooq" }
+koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin-bom" }
+koin-core = { module = "io.insert-koin:koin-core" }
+koin-ktor = { module =  "io.insert-koin:koin-ktor" }
+koin-logger-slf4j = { module = "io.insert-koin:koin-logger-slf4j" }
 
 [bundles]
 liquibase = ["liquibase-core", "picocli", "postgresql"]
+koin = ["koin-core", "koin-ktor", "koin-ktor", "koin-logger-slf4j"]
 
 [plugins]
 ktor = { id = "io.ktor.plugin", version.ref = "ktor" }

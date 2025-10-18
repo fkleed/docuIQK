@@ -16,6 +16,10 @@ dependencies {
     implementation(libs.logback)
     implementation(libs.kotlinx.serialization.json)
 
+
+    implementation(project.dependencies.platform(libs.koin.bom))
+    implementation(libs.bundles.koin)
+
     implementation(libs.data)
 }
 

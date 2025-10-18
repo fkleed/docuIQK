@@ -4,37 +4,34 @@ import com.example.tag.Tag
 import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.server.application.*
-import io.ktor.server.plugins.di.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.utils.io.*
 import kotlinx.io.readByteArray
 import kotlinx.serialization.json.Json
-import org.jooq.DSLContext
+import org.koin.dsl.module
+import org.koin.ktor.ext.inject
 import org.slf4j.LoggerFactory
 import java.util.*
 
 private val LOGGER = LoggerFactory.getLogger("com.example.collection.DocumentModuleKt")
 
+val documentKoinModule = module {
+    single { JooqDocumentRepositoryImpl(get()) as DocumentRepository }
+    single { DocumentServiceImpl(get()) as DocumentService }
+}
+
 fun Application.documentModule() {
 
-    val dslContext: DSLContext by dependencies
-    val documentRepository: DocumentRepository by dependencies
-
-    dependencies {
-        provide<DocumentService> { DocumentServiceImpl(documentRepository) }
-        provide<DocumentRepository> { JooqDocumentRepositoryImpl(dslContext) }
-    }
+    val documentService by inject<DocumentService>()
 
     routing {
         route("/document") {
-            val documentService: DocumentService by dependencies
-
             post("/upload") {
                 var documentName: String? = null
                 var collectionId: UUID? = null
-                var tags: MutableSet<Tag> = mutableSetOf()
+                val tags: MutableSet<Tag> = mutableSetOf()
                 var documentData: ByteArray? = null
 
                 val multipartData = call.receiveMultipart(formFieldLimit = 1024 * 1024 * 100)

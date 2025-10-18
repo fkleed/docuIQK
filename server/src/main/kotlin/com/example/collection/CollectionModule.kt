@@ -2,29 +2,27 @@ package com.example.collection
 
 import io.ktor.http.*
 import io.ktor.server.application.*
-import io.ktor.server.plugins.di.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import org.jooq.DSLContext
+import org.koin.dsl.module
+import org.koin.ktor.ext.inject
 import org.slf4j.LoggerFactory
 import java.util.*
 
 private val LOGGER = LoggerFactory.getLogger("com.example.collection.CollectionModuleKt")
 
+val collectionKoinModule = module {
+    single { JooqCollectionRepositoryImpl(get()) as CollectionRepository }
+    single { CollectionServiceImpl(get()) as CollectionService }
+}
+
 fun Application.collectionModule() {
 
-    val dslContext: DSLContext by dependencies
-    val collectionRepository: CollectionRepository by dependencies
-
-    dependencies {
-        provide<CollectionService> { CollectionServiceImpl(collectionRepository) }
-        provide<CollectionRepository> { JooqCollectionRepositoryImpl(dslContext) }
-    }
+    val collectionService by inject<CollectionService>()
 
     routing {
         route("/collection") {
-            val collectionService: CollectionService by dependencies
 
             post {
                 val documentCollection = call.receive<DocumentCollection>()

@@ -2,30 +2,27 @@ package com.example.tag
 
 import io.ktor.http.*
 import io.ktor.server.application.*
-import io.ktor.server.plugins.di.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import org.jooq.DSLContext
+import org.koin.dsl.module
+import org.koin.ktor.ext.inject
 import org.slf4j.LoggerFactory
 import java.util.*
 
 private val LOGGER = LoggerFactory.getLogger("com.example.tag.TagModuleKt")
 
+val tagKoinModule = module {
+    single { JooqTagRepositoryImpl(get()) as TagRepository }
+    single { TagServiceImpl(get()) as TagService }
+}
+
 fun Application.tagModule() {
 
-    val dslContext: DSLContext by dependencies
-    val tagRepository: TagRepository by dependencies
-
-    dependencies {
-        provide<TagService> { TagServiceImpl(tagRepository) }
-        provide<TagRepository> { JooqTagRepositoryImpl(dslContext) }
-    }
+    val tagService by inject<TagService>();
 
     routing {
         route("/tag") {
-            val tagService: TagService by dependencies
-
             post {
                 val tag = call.receive<Tag>()
                 LOGGER.debug("Request to store tag {}", tag)
@@ -60,5 +57,4 @@ fun Application.tagModule() {
             }
         }
     }
-
 }
