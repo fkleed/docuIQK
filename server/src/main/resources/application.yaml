@@ -9,6 +9,11 @@ database:
   url: jdbc:postgresql://localhost:5434/docuiqk
   user: docuiqk_user
   password: password123
+minio:
+  url: http://localhost:9900
+  user: minio_user
+  password: minio_password
+  bucket: docuiqk
 logging:
   jooq:
     enabled: true

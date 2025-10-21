@@ -19,7 +19,7 @@ private val LOGGER = LoggerFactory.getLogger("com.example.collection.DocumentMod
 
 val documentKoinModule = module {
     single { JooqDocumentRepositoryImpl(get()) as DocumentRepository }
-    single { DocumentServiceImpl(get()) as DocumentService }
+    single { DocumentServiceImpl(get(), get()) as DocumentService }
 }
 
 fun Application.documentModule() {
@@ -70,7 +70,7 @@ fun Application.documentModule() {
                 }
 
                 LOGGER.debug(
-                    "Request to upload new document. Document name: {} collection id: {}, tags: {}",
+                    "Request to upload new document. Document name: {}, collection id: {}, tags: {}",
                     documentName,
                     collectionId,
                     tags
@@ -83,15 +83,10 @@ fun Application.documentModule() {
                     documentData
                 ).getOrThrowIfInvalid()
 
-                val document = validDocumentUpload.toDocument(
-                    UUID.randomUUID(),
-                    DocumentProcessingStatus.RECEIVED
-                )
-
-                documentService.upload(document)
+                val documentId = documentService.upload(validDocumentUpload)
 
                 call.respondText(
-                    text = document.id.toString(),
+                    text = documentId.toString(),
                     status = HttpStatusCode.Created
                 )
             }

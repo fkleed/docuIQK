@@ -1,5 +1,6 @@
 package com.example.document
 
+import com.example.shared.MinioFileUpload
 import com.example.shared.UUIDSerializer
 import com.example.shared.Validated
 import com.example.tag.Tag
@@ -11,7 +12,8 @@ data class DocumentUpload(
     val name: String,
     val collectionId: UUID,
     val tags: Set<Tag>,
-    val documentData: ByteArray
+    val documentData: ByteArray,
+    val contentType: String
 ) {
     companion object {
         const val DOCUMENT_FROM_DATA = "document"
@@ -58,7 +60,8 @@ data class DocumentUpload(
                     documentName!!,
                     collectionId!!,
                     tags,
-                    documentData!!
+                    documentData!!,
+                    ContentType.Application.Pdf.toString()
                 )
                 return Validated.Valid(documentUpload)
             } else {
@@ -108,9 +111,14 @@ fun DocumentUpload.toDocument(documentId: UUID, processingStatus: DocumentProces
     tags
 )
 
+fun DocumentUpload.toMinioFileUpload(uploadName: String) = MinioFileUpload(
+    uploadName,
+    contentType,
+    documentData
+)
+
 @Serializable
 enum class DocumentProcessingStatus {
-    RECEIVED,
     UPLOADED,
     PROCESSING,
     PROCESSED;

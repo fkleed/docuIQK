@@ -5,6 +5,7 @@ import com.example.collection.collectionModule
 import com.example.document.documentKoinModule
 import com.example.document.documentModule
 import com.example.shared.jooqKoinModule
+import com.example.shared.minioKoinModule
 import com.example.tag.tagKoinModule
 import com.example.tag.tagModule
 import io.ktor.http.*
@@ -41,7 +42,8 @@ fun Application.main() {
             jooqKoinModule,
             documentKoinModule,
             collectionKoinModule,
-            tagKoinModule
+            tagKoinModule,
+            minioKoinModule
         )
     }
 

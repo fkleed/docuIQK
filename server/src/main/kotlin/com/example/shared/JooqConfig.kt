@@ -12,25 +12,25 @@ import javax.sql.DataSource
 val jooqKoinModule = module {
     single {
         val config = get<ApplicationConfig>()
-        val postgresDSLContext = PostgresDSLContext(
+        val postgresDSLCofig = PostgresDSLCofig(
             databaseUrl = config.property("database.url").getString(),
             databaseUser = config.property("database.user").getString(),
             databasePassword = config.property("database.password").getString(),
             executeLogging = config.property("logging.jooq.enabled").getString().toBoolean()
         )
-        providePostgresDSLContext(postgresDSLContext)
+        providePostgresDSLContext(postgresDSLCofig)
     }
 }
 
 
-fun providePostgresDSLContext(postgresDSLContext: PostgresDSLContext): DSLContext {
+fun providePostgresDSLContext(postgresDSLCofig: PostgresDSLCofig): DSLContext {
     val postgresDataSource = providePostgresDataSource(
-        databaseUrl = postgresDSLContext.databaseUrl,
-        databaseUser = postgresDSLContext.databaseUser,
-        databasePassword = postgresDSLContext.databasePassword
+        databaseUrl = postgresDSLCofig.databaseUrl,
+        databaseUser = postgresDSLCofig.databaseUser,
+        databasePassword = postgresDSLCofig.databasePassword
     )
 
-    val settings = Settings().withExecuteLogging(postgresDSLContext.executeLogging)
+    val settings = Settings().withExecuteLogging(postgresDSLCofig.executeLogging)
     val dslContext = DSL.using(postgresDataSource, SQLDialect.POSTGRES, settings)
     return dslContext
 }
@@ -50,7 +50,7 @@ private fun providePostgresDataSource(
     }
 }
 
-data class PostgresDSLContext(
+data class PostgresDSLCofig(
     val databaseUrl: String,
     val databaseUser: String,
     val databasePassword: String,

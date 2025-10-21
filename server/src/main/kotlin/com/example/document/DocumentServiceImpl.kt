@@ -1,13 +1,26 @@
 package com.example.document
 
+import com.example.shared.MinioService
 import java.util.UUID
 
-class DocumentServiceImpl(val documentRepository: DocumentRepository) : DocumentService {
+class DocumentServiceImpl(
+    val documentRepository: DocumentRepository,
+    val minioService: MinioService
+) : DocumentService {
 
-    override fun upload(document: Document): UUID {
-        val documentId = documentRepository.save(document)
+    override fun upload(documentUpload: DocumentUpload): UUID {
 
-        // TODO launch coroutines to upload data to s3 and send notification to RabbitMq
+        val documentId = UUID.randomUUID();
+
+        val minioFileUpload = documentUpload.toMinioFileUpload(documentId.toString())
+
+        minioService.uploadFile(minioFileUpload)
+
+        val document = documentUpload.toDocument(
+            documentId,
+            DocumentProcessingStatus.UPLOADED
+        )
+        documentRepository.save(document)
 
         return documentId
     }
