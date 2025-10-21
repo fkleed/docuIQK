@@ -1,0 +1,73 @@
+databaseChangeLog:
+  - changeSet:
+      id: 202508150800
+      author: fkleed
+      labels: document
+      context: main
+      changes:
+        - createTable:
+            tableName: document
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(150)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: collection
+                  type: uuid
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: document
+            baseColumnNames: collection
+            referencedTableName: collection
+            referencedColumnNames: id
+            onDelete: CASCADE
+            onUpdate: RESTRICT
+            constraintName: fk_document_collection
+        - createTable:
+            tableName: document_tag
+            columns:
+              - column:
+                  name: document_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: tag_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+        - addPrimaryKey:
+            tableName: document_tag
+            columnNames: document_id, tag_id
+            constraintName: pk_document_tag
+        - addForeignKeyConstraint:
+            baseTableName: document_tag
+            baseColumnNames: document_id
+            referencedTableName: document
+            referencedColumnNames: id
+            onDelete: CASCADE
+            onUpdate: RESTRICT
+            constraintName: fk_document
+        - addForeignKeyConstraint:
+            baseTableName: document_tag
+            baseColumnNames: tag_id
+            referencedTableName: tag
+            referencedColumnNames: id
+            onDelete: CASCADE
+            onUpdate: RESTRICT
+            constraintName: fk_tag
+

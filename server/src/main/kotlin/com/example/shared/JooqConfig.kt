@@ -1,26 +1,36 @@
 package com.example.shared
 
-import io.ktor.server.plugins.di.annotations.Property
+import io.ktor.server.config.ApplicationConfig
 import org.jooq.DSLContext
 import org.jooq.SQLDialect
 import org.jooq.conf.Settings
 import org.jooq.impl.DSL
+import org.koin.dsl.module
 import org.postgresql.ds.PGSimpleDataSource
 import javax.sql.DataSource
 
-fun providePostgresDSLContext(
-    @Property("database.url") databaseUrl: String,
-    @Property("database.user") databaseUser: String,
-    @Property("database.password") databasePassword: String,
-    @Property("logging.jooq.enabled") executeLogging: Boolean
-): DSLContext {
+val jooqKoinModule = module {
+    single {
+        val config = get<ApplicationConfig>()
+        val postgresDSLCofig = PostgresDSLCofig(
+            databaseUrl = config.property("database.url").getString(),
+            databaseUser = config.property("database.user").getString(),
+            databasePassword = config.property("database.password").getString(),
+            executeLogging = config.property("logging.jooq.enabled").getString().toBoolean()
+        )
+        providePostgresDSLContext(postgresDSLCofig)
+    }
+}
+
+
+fun providePostgresDSLContext(postgresDSLCofig: PostgresDSLCofig): DSLContext {
     val postgresDataSource = providePostgresDataSource(
-        databaseUrl,
-        databaseUser,
-        databasePassword
+        databaseUrl = postgresDSLCofig.databaseUrl,
+        databaseUser = postgresDSLCofig.databaseUser,
+        databasePassword = postgresDSLCofig.databasePassword
     )
 
-    val settings = Settings().withExecuteLogging(executeLogging)
+    val settings = Settings().withExecuteLogging(postgresDSLCofig.executeLogging)
     val dslContext = DSL.using(postgresDataSource, SQLDialect.POSTGRES, settings)
     return dslContext
 }
@@ -39,3 +49,10 @@ private fun providePostgresDataSource(
         password = databasePassword
     }
 }
+
+data class PostgresDSLCofig(
+    val databaseUrl: String,
+    val databaseUser: String,
+    val databasePassword: String,
+    val executeLogging: Boolean
+)

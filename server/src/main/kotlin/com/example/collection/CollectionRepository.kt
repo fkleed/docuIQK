@@ -6,7 +6,7 @@ interface CollectionRepository {
 
     fun save(documentCollection: DocumentCollection): UUID
 
-    fun getById(id: UUID): DocumentCollection
+    fun findById(id: UUID): DocumentCollection
 
     fun update(documentCollection: DocumentCollection)
 

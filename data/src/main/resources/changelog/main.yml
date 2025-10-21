@@ -7,3 +7,7 @@ databaseChangeLog:
       file: tag.yml
       errorIfMissing: true
       relativeToChangelogFile: true
+  - include:
+      file: document.yml
+      errorIfMissing: true
+      relativeToChangelogFile: true

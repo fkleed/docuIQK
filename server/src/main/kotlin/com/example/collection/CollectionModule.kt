@@ -2,29 +2,27 @@ package com.example.collection
 
 import io.ktor.http.*
 import io.ktor.server.application.*
-import io.ktor.server.plugins.di.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import org.jooq.DSLContext
+import org.koin.dsl.module
+import org.koin.ktor.ext.inject
 import org.slf4j.LoggerFactory
 import java.util.*
 
 private val LOGGER = LoggerFactory.getLogger("com.example.collection.CollectionModuleKt")
 
+val collectionKoinModule = module {
+    single { JooqCollectionRepositoryImpl(get()) as CollectionRepository }
+    single { CollectionServiceImpl(get()) as CollectionService }
+}
+
 fun Application.collectionModule() {
 
-    val dslContext: DSLContext by dependencies
-    val collectionRepository: CollectionRepository by dependencies
-
-    dependencies {
-        provide<CollectionService> { CollectionServiceImpl(collectionRepository) }
-        provide<CollectionRepository> { JooqCollectionRepositoryImpl(dslContext) }
-    }
+    val collectionService by inject<CollectionService>()
 
     routing {
         route("/collection") {
-            val collectionService: CollectionService by dependencies
 
             post {
                 val documentCollection = call.receive<DocumentCollection>()
@@ -33,12 +31,18 @@ fun Application.collectionModule() {
                 call.respond(HttpStatusCode.Created, id.toString())
             }
 
+            get {
+                LOGGER.debug("Request to get all collections")
+                call.respond(HttpStatusCode.NotImplemented)
+            }
+
             get("/{id}") {
                 val collectionId = UUID.fromString(call.parameters["id"])
                 LOGGER.debug("Request to get collection with id {}", collectionId)
                 val collection =  collectionService.getById(collectionId)
                 call.respond(collection)
             }
+
             put {
                 val documentCollection = call.receive<DocumentCollection>()
                 LOGGER.debug("Request to update collection {}", documentCollection)

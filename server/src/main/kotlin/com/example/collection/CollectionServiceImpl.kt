@@ -9,7 +9,7 @@ class CollectionServiceImpl(val collectionRepository: CollectionRepository) : Co
     }
 
     override fun getById(id: UUID): DocumentCollection {
-        return collectionRepository.getById(id)
+        return collectionRepository.findById(id)
     }
 
     override fun update(documentCollection: DocumentCollection) {

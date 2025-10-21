@@ -1,7 +1,12 @@
 package com.example
 
+import com.example.collection.collectionKoinModule
 import com.example.collection.collectionModule
-import com.example.file.fileRoutes
+import com.example.document.documentKoinModule
+import com.example.document.documentModule
+import com.example.shared.jooqKoinModule
+import com.example.shared.minioKoinModule
+import com.example.tag.tagKoinModule
 import com.example.tag.tagModule
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
@@ -10,21 +15,38 @@ import io.ktor.server.plugins.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.response.*
-import io.ktor.server.routing.*
+import org.koin.dsl.module
+import org.koin.ktor.plugin.Koin
+import org.koin.logger.slf4jLogger
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
-fun Application.module() {
+fun Application.main() {
     collectionModule()
     tagModule()
-
-    routing {
-        fileRoutes()
-    }
+    documentModule()
 
     install(ContentNegotiation) {
         json()
     }
+
+    install(Koin) {
+        slf4jLogger()
+
+        val applicationModule = module {
+            single { environment.config }
+        }
+
+        modules(
+            applicationModule,
+            jooqKoinModule,
+            documentKoinModule,
+            collectionKoinModule,
+            tagKoinModule,
+            minioKoinModule
+        )
+    }
+
 
     install(StatusPages) {
         exception<Throwable> { call, cause ->
